@@ -1,6 +1,8 @@
 # Wordle Clone
 
-This is a clone of [Wordle](https://www.powerlanguage.co.uk/wordle/)
+A text-based clone of [Wordle](https://www.powerlanguage.co.uk/wordle/).
+
+Words generated from [7esl.com](https://7esl.com/).
 
 <!-- ## Installation
 
