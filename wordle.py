@@ -8,6 +8,11 @@ class LetterResult(Enum):
     CORRECT_POSITION = 2
 
 
+class GameResult(Enum):
+    LOSS = 0
+    WIN = 1
+
+
 def get_input(guess_count, word_length):
     while True:
         print(f"Enter guess #{guess_count+1}: ", end="")
@@ -43,11 +48,18 @@ WORD_LENGTH = 5
 WORD_LIST = ["crimp"]
 MAX_GUESS_COUNT = 6
 
-guess_count = 0
 word = WORD_LIST[0]
+game_result = GameResult.LOSS
 
-guess = get_input(guess_count, WORD_LENGTH)
+for guess_count in range(MAX_GUESS_COUNT):
+    guess = get_input(guess_count, WORD_LENGTH)
+    res = analyze_guess(guess, word)
+    if set(res) == set([LetterResult.CORRECT_POSITION]):
+        game_result = GameResult.WIN
+        break
 
-res = analyze_guess(guess, word)
-if set(res) == set([LetterResult.CORRECT_POSITION]):
+
+if game_result == GameResult.WIN:
     print("you win!")
+else:
+    print(f"You lose! The word was {word}.")
