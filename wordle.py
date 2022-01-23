@@ -39,7 +39,7 @@ def analyze_guess(guess, word):
             unguessed_letters.remove(letter_pair[0])
             res = LetterResult.INCORRECT_POSITION
 
-        print(f"{letter_pair[0]} {letter_pair[1]}: {res}")
+        print(f"{letter_pair[0]}: {res}")
         guess_result.append(res)
 
     return guess_result
