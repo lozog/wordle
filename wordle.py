@@ -24,7 +24,7 @@ def get_input(guess_count, word_length):
 
         print(f"Your guess must be {word_length} letters long.")
 
-    return guess
+    return guess.lower()
 
 
 def analyze_guess(guess, word):
@@ -52,7 +52,7 @@ WORD_LIST = input_file.read().splitlines()
 
 while True:
     word_choice = random.randint(0, len(WORD_LIST) - 1)
-    word = WORD_LIST[word_choice]
+    word = WORD_LIST[word_choice].lower()
     game_result = GameResult.LOSS
 
     for guess_count in range(MAX_GUESS_COUNT):
