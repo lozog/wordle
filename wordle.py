@@ -48,18 +48,23 @@ WORD_LENGTH = 5
 WORD_LIST = ["crimp"]
 MAX_GUESS_COUNT = 6
 
-word = WORD_LIST[0]
-game_result = GameResult.LOSS
+while True:
+    word = WORD_LIST[0]
+    game_result = GameResult.LOSS
 
-for guess_count in range(MAX_GUESS_COUNT):
-    guess = get_input(guess_count, WORD_LENGTH)
-    res = analyze_guess(guess, word)
-    if set(res) == set([LetterResult.CORRECT_POSITION]):
-        game_result = GameResult.WIN
+    for guess_count in range(MAX_GUESS_COUNT):
+        guess = get_input(guess_count, WORD_LENGTH)
+        res = analyze_guess(guess, word)
+        if set(res) == set([LetterResult.CORRECT_POSITION]):
+            game_result = GameResult.WIN
+            break
+
+
+    if game_result == GameResult.WIN:
+        print("You win!")
+    else:
+        print(f"You lose! The word was {word}.")
+
+    print("Play again? (y/n): ", end="")
+    if input() != "y":
         break
-
-
-if game_result == GameResult.WIN:
-    print("you win!")
-else:
-    print(f"You lose! The word was {word}.")
