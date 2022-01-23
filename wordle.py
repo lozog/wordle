@@ -1,5 +1,6 @@
 from enum import Enum
 from pprint import pprint
+import random
 
 
 class LetterResult(Enum):
@@ -49,7 +50,9 @@ WORD_LIST = ["crimp"]
 MAX_GUESS_COUNT = 6
 
 while True:
-    word = WORD_LIST[0]
+    word_choice = random.randint(0, len(WORD_LIST) - 1)
+    print(word_choice)
+    word = WORD_LIST[word_choice]
     game_result = GameResult.LOSS
 
     for guess_count in range(MAX_GUESS_COUNT):
