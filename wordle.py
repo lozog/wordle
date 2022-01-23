@@ -46,12 +46,12 @@ def analyze_guess(guess, word):
 
 
 WORD_LENGTH = 5
-WORD_LIST = ["crimp"]
 MAX_GUESS_COUNT = 6
+input_file = open(f"word_list_{WORD_LENGTH}", 'r')
+WORD_LIST = input_file.read().splitlines()
 
 while True:
     word_choice = random.randint(0, len(WORD_LIST) - 1)
-    print(word_choice)
     word = WORD_LIST[word_choice]
     game_result = GameResult.LOSS
 
