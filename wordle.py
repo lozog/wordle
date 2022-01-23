@@ -8,6 +8,19 @@ class LetterResult(Enum):
     CORRECT_POSITION = 2
 
 
+def get_input(guess_count, word_length):
+    while True:
+        print(f"Enter guess #{guess_count+1}: ", end="")
+        guess = input()
+
+        if len(guess) == word_length:
+            break
+
+        print(f"Your guess must be {word_length} letters long.")
+
+    return guess
+
+
 def analyze_guess(guess, word):
     unguessed_letters = list(word)
     guess_result = []
@@ -26,15 +39,14 @@ def analyze_guess(guess, word):
     return guess_result
 
 
+WORD_LENGTH = 5
 WORD_LIST = ["crimp"]
 MAX_GUESS_COUNT = 6
 
 guess_count = 0
-
 word = WORD_LIST[0]
-print(f"Enter guess #{guess_count+1}: ", end="")
-guess = input()
-# TODO: ensure guess is 5 letters long
+
+guess = get_input(guess_count, WORD_LENGTH)
 
 res = analyze_guess(guess, word)
 if set(res) == set([LetterResult.CORRECT_POSITION]):
