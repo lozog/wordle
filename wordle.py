@@ -67,7 +67,7 @@ def analyze_guess(guess, word, letter_results):
 WORD_LENGTH = 5
 MAX_GUESS_COUNT = 6
 input_file = open(f"word_list_{WORD_LENGTH}", 'r')
-WORD_LIST = input_file.read().splitlines()
+WORD_LIST = list(set(input_file.read().splitlines()))
 ALPHABET = "abcdefghijklmnopqrstuvwxyz"
 
 while True:
@@ -84,7 +84,6 @@ while True:
         if set(res) == set([LetterResult.CORRECT_POSITION]):
             game_result = GameResult.WIN
             break
-
 
     if game_result == GameResult.WIN:
         print("You win!")
