@@ -88,7 +88,7 @@ def main(argv):
     WORD_LENGTH = 5
     MAX_GUESS_COUNT = 6
     input_file = open(f"word_list_{WORD_LENGTH}", 'r')
-    WORD_LIST = list(set(input_file.read().splitlines()))
+    WORD_LIST = [word.lower() for word in set(input_file.read().splitlines())]
     ALPHABET = "abcdefghijklmnopqrstuvwxyz"
 
     while True:
