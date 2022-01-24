@@ -26,15 +26,20 @@ def pprint_debug(string):
         pprint(string)
 
 
-def get_input(guess_count, word_length):
+def get_input(guess_count, word_length, word_list):
     while True:
         print(f"Enter guess #{guess_count+1}: ", end="")
         guess = input()
 
-        if len(guess) == word_length:
-            break
+        if len(guess) != word_length:
+            print(f"Your guess must be {word_length} letters long.")
+            continue
 
-        print(f"Your guess must be {word_length} letters long.")
+        if guess not in word_list:
+            print(f"{guess} isn't in the word list.")
+            continue
+
+        break
 
     return guess.lower()
 
@@ -73,7 +78,7 @@ while True:
     letter_results = {letter:LetterResult.UNUSED for letter in ALPHABET}
 
     for guess_count in range(MAX_GUESS_COUNT):
-        guess = get_input(guess_count, WORD_LENGTH)
+        guess = get_input(guess_count, WORD_LENGTH, WORD_LIST)
         res = analyze_guess(guess, word, letter_results)
         pprint_debug(letter_results)
         if set(res) == set([LetterResult.CORRECT_POSITION]):
