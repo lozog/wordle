@@ -1,6 +1,8 @@
 from enum import Enum
+import getopt
 from pprint import pprint
 import random
+import sys
 
 
 class LetterResult(Enum):
@@ -24,6 +26,11 @@ def print_debug(string):
 def pprint_debug(string):
     if DEBUG_MODE:
         pprint(string)
+
+
+def print_usage():
+    print("Usage: python wordle.py [flags]")
+    print("Available flags: -h, --help; -d, --debug")
 
 
 def get_input(guess_count, word_length, word_list):
@@ -63,33 +70,50 @@ def analyze_guess(guess, word, letter_results):
 
     return guess_result
 
+def main(argv):
+    try:
+        opts, args = getopt.getopt(argv, "hd", ["--help", "--debug"])
+    except getopt.GetoptError:
+        print_usage()
+        sys.exit(2)
+    for opt, arg in opts:
+        if opt in ("-h", "--help"):
+            print_usage()
+            sys.exit()
+        elif opt in ("-d", "--debug"):
+            global DEBUG_MODE
+            DEBUG_MODE = True
 
-WORD_LENGTH = 5
-MAX_GUESS_COUNT = 6
-input_file = open(f"word_list_{WORD_LENGTH}", 'r')
-WORD_LIST = list(set(input_file.read().splitlines()))
-ALPHABET = "abcdefghijklmnopqrstuvwxyz"
 
-while True:
-    word_choice = random.randint(0, len(WORD_LIST) - 1)
-    word = WORD_LIST[word_choice].lower()
-    print_debug(word)
-    game_result = GameResult.LOSS
-    letter_results = {letter:LetterResult.UNUSED for letter in ALPHABET}
+    WORD_LENGTH = 5
+    MAX_GUESS_COUNT = 6
+    input_file = open(f"word_list_{WORD_LENGTH}", 'r')
+    WORD_LIST = list(set(input_file.read().splitlines()))
+    ALPHABET = "abcdefghijklmnopqrstuvwxyz"
 
-    for guess_count in range(MAX_GUESS_COUNT):
-        guess = get_input(guess_count, WORD_LENGTH, WORD_LIST)
-        res = analyze_guess(guess, word, letter_results)
-        pprint_debug(letter_results)
-        if set(res) == set([LetterResult.CORRECT_POSITION]):
-            game_result = GameResult.WIN
+    while True:
+        word_choice = random.randint(0, len(WORD_LIST) - 1)
+        word = WORD_LIST[word_choice].lower()
+        print_debug(word)
+        game_result = GameResult.LOSS
+        letter_results = {letter:LetterResult.UNUSED for letter in ALPHABET}
+
+        for guess_count in range(MAX_GUESS_COUNT):
+            guess = get_input(guess_count, WORD_LENGTH, WORD_LIST)
+            res = analyze_guess(guess, word, letter_results)
+            pprint_debug(letter_results)
+            if set(res) == set([LetterResult.CORRECT_POSITION]):
+                game_result = GameResult.WIN
+                break
+
+        if game_result == GameResult.WIN:
+            print("You win!")
+        else:
+            print(f"You lose! The word was {word}.")
+
+        print("Play again? (y/n): ", end="")
+        if input() != "y":
             break
 
-    if game_result == GameResult.WIN:
-        print("You win!")
-    else:
-        print(f"You lose! The word was {word}.")
-
-    print("Play again? (y/n): ", end="")
-    if input() != "y":
-        break
+if __name__ == "__main__":
+    main(sys.argv[1:])
