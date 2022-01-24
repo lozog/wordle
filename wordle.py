@@ -6,10 +6,10 @@ import sys
 
 
 class LetterResult(Enum):
-    INCORRECT = 0
-    INCORRECT_POSITION = 1
-    CORRECT_POSITION = 2
-    UNUSED = 3
+    INCORRECT = 0           # letter not in word
+    INCORRECT_POSITION = 1  # letter in word, but wrong position
+    CORRECT_POSITION = 2    # letter in correct position
+    UNUSED = 3              # letter not yet guessed
 
 
 class GameResult(Enum):
@@ -52,21 +52,32 @@ def get_input(guess_count, word_length, word_list):
 
 
 def analyze_guess(guess, word, letter_results):
+    guess_result = [LetterResult.INCORRECT for letter in guess]
+    remaining_guess = list(guess)
     unguessed_letters = list(word)
-    guess_result = []
-    for letter_pair in zip(guess, word):
-        letter = letter_pair[0]
-        letter_result = LetterResult.INCORRECT
-        if letter == letter_pair[1]:
-            unguessed_letters.remove(letter)
-            letter_result = LetterResult.CORRECT_POSITION
-        elif letter in unguessed_letters:
-            unguessed_letters.remove(letter)
-            letter_result = LetterResult.INCORRECT_POSITION
 
-        guess_result.append(letter_result)
-        letter_results[letter] = letter_result
-        print(f"{letter}: {letter_result}")
+    # first, find all letters in the correct position
+    for i, letter_pair in enumerate(zip(guess, word)):
+        letter = letter_pair[0]
+        if letter == letter_pair[1]:
+            guess_result[i] = LetterResult.CORRECT_POSITION
+            remaining_guess[i] = None
+            unguessed_letters[i] = None
+
+    # then find any remaining letters that are in incorrect positions
+    for i, letter in enumerate(remaining_guess):
+        if letter is not None and letter in unguessed_letters:
+            guess_result[i] = LetterResult.INCORRECT_POSITION
+
+    # copy the guess results into letter_results
+    for result in zip(guess, guess_result):
+        if (
+            result[1] == LetterResult.CORRECT_POSITION
+            or letter_results[result[0]] == LetterResult.UNUSED
+            or letter_results[result[0]] == LetterResult.INCORRECT_POSITION
+        ):
+            print_debug(f"setting {result[0]} to {result[1]}")
+            letter_results[result[0]] = result[1]
 
     return guess_result
 
