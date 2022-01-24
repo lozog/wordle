@@ -32,13 +32,23 @@ def print_usage():
     print("Available flags: -h, --help; -d, --debug")
 
 
-def get_input(guess_count, word_length, word_list, letter_results):
+def get_input(guess_count, word, word_list, letter_results):
+    def are_hard_mode_conditions_met(guess, word, letter_results):
+        for i, letter_pair in enumerate(zip(guess, word)):
+            if (
+                letter_results[letter_pair[1]] == LetterResult.CORRECT_POSITION
+                and letter_pair[0] != letter_pair[1]
+            ):
+                print(f"Letter at position {i+1} must be {letter_pair[1]}.")
+                return False
+        return True
+
     while True:
         print(f"Enter guess #{guess_count+1}: ", end="")
         guess = input()
 
-        if len(guess) != word_length:
-            print(f"Your guess must be {word_length} letters long.")
+        if len(guess) != len(word):
+            print(f"Your guess must be {len(word)} letters long.")
             continue
 
         if guess not in word_list:
@@ -46,14 +56,8 @@ def get_input(guess_count, word_length, word_list, letter_results):
             continue
 
         if HARD_MODE:
-            for letter, letter_result in letter_results.items():
-                if (
-                    (letter_result == LetterResult.INCORRECT_POSITION
-                    or letter_result == LetterResult.CORRECT_POSITION)
-                    and letter not in guess
-                ):
-                    print(f"Your guess must contain {letter}.")
-                    continue
+            if not are_hard_mode_conditions_met(guess, word, letter_results):
+                continue
 
         break
 
@@ -126,7 +130,7 @@ def main(argv):
         letter_results = {letter:LetterResult.UNUSED for letter in ALPHABET}
 
         for guess_count in range(MAX_GUESS_COUNT):
-            guess = get_input(guess_count, WORD_LENGTH, WORD_LIST, letter_results)
+            guess = get_input(guess_count, word, WORD_LIST, letter_results)
             guess_result = analyze_guess(guess, word, letter_results)
             pprint_debug(letter_results)
             if set(guess_result) == set([LetterResult.CORRECT_POSITION]):
