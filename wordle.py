@@ -17,7 +17,6 @@ class GameResult(Enum):
     WIN = 1
 
 
-DEBUG_MODE = False
 def print_debug(string):
     if DEBUG_MODE:
         print(string)
@@ -33,18 +32,32 @@ def print_usage():
     print("Available flags: -h, --help; -d, --debug")
 
 
-def get_input(guess_count, word_length, word_list):
+def get_input(guess_count, word, word_list, letter_results):
+    def are_hard_mode_conditions_met(guess, word, letter_results):
+        for i, letter_pair in enumerate(zip(guess, word)):
+            if (
+                letter_results[letter_pair[1]] == LetterResult.CORRECT_POSITION
+                and letter_pair[0] != letter_pair[1]
+            ):
+                print(f"Letter at position {i+1} must be {letter_pair[1]}.")
+                return False
+        return True
+
     while True:
         print(f"Enter guess #{guess_count+1}: ", end="")
         guess = input()
 
-        if len(guess) != word_length:
-            print(f"Your guess must be {word_length} letters long.")
+        if len(guess) != len(word):
+            print(f"Your guess must be {len(word)} letters long.")
             continue
 
         if guess not in word_list:
             print(f"{guess} isn't in the word list.")
             continue
+
+        if HARD_MODE:
+            if not are_hard_mode_conditions_met(guess, word, letter_results):
+                continue
 
         break
 
@@ -81,9 +94,17 @@ def analyze_guess(guess, word, letter_results):
 
     return guess_result
 
+
+DEBUG_MODE = False
+WORD_LENGTH = 5
+MAX_GUESS_COUNT = 6
+ALPHABET = "abcdefghijklmnopqrstuvwxyz"
+HARD_MODE = False
+
+
 def main(argv):
     try:
-        opts, args = getopt.getopt(argv, "hd", ["--help", "--debug"])
+        opts, args = getopt.getopt(argv, "hdx", ["--help", "--hard", "--debug"])
     except getopt.GetoptError:
         print_usage()
         sys.exit(2)
@@ -94,13 +115,12 @@ def main(argv):
         elif opt in ("-d", "--debug"):
             global DEBUG_MODE
             DEBUG_MODE = True
+        elif opt in ("-x", "--hard"):
+            global HARD_MODE
+            HARD_MODE = True
 
-
-    WORD_LENGTH = 5
-    MAX_GUESS_COUNT = 6
     input_file = open(f"word_list_{WORD_LENGTH}", 'r')
     WORD_LIST = [word.lower() for word in set(input_file.read().splitlines())]
-    ALPHABET = "abcdefghijklmnopqrstuvwxyz"
 
     while True:
         word_choice = random.randint(0, len(WORD_LIST) - 1)
@@ -110,10 +130,10 @@ def main(argv):
         letter_results = {letter:LetterResult.UNUSED for letter in ALPHABET}
 
         for guess_count in range(MAX_GUESS_COUNT):
-            guess = get_input(guess_count, WORD_LENGTH, WORD_LIST)
-            res = analyze_guess(guess, word, letter_results)
+            guess = get_input(guess_count, word, WORD_LIST, letter_results)
+            guess_result = analyze_guess(guess, word, letter_results)
             pprint_debug(letter_results)
-            if set(res) == set([LetterResult.CORRECT_POSITION]):
+            if set(guess_result) == set([LetterResult.CORRECT_POSITION]):
                 game_result = GameResult.WIN
                 break
 
