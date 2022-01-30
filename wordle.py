@@ -81,6 +81,7 @@ def analyze_guess(guess, word, letter_results):
     for i, letter in enumerate(remaining_guess):
         if letter is not None and letter in unguessed_letters:
             guess_result[i] = LetterResult.INCORRECT_POSITION
+            unguessed_letters.remove(letter)
 
     # copy the guess results into letter_results
     for result in zip(guess, guess_result):
